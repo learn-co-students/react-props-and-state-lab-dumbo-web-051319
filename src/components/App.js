@@ -21,13 +21,13 @@ class App extends React.Component {
     })
   }
 
-  onChangeType = (event) => {
+  changeFilter = (event) => {
     this.setState({
       filters: {...this.state.filters, type: event.target.value}
     })
   }
 
-  onFindPetsClick = () => {
+  findPets = () => {
     let type = this.state.filters.type
     if(type === "all") {
       fetch("/api/pets")
