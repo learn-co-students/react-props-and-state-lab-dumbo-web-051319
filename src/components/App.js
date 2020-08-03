@@ -1,49 +1,42 @@
-import React from 'react'
+import React from 'react';
 
-import Filters from './Filters'
-import PetBrowser from './PetBrowser'
+import Filters from './Filters';
+import PetBrowser from './PetBrowser';
 
 class App extends React.Component {
   constructor() {
-    super()
+    super();
 
     this.state = {
       pets: [],
       filters: {
         type: 'all'
       }
-    }
+    };
   }
 
-  onChangeType = (term) => {
-    this.setState({ filters:
-      { type: term }
-    })
-  }
+  fetchPets = () => {
+    let endpoint = '/api/pets';
 
-fetchPets = () => {
-  let fetchUrl = '/api/pets';
-
-   if (this.state.filters.type !== 'all') {
-     fetchUrl = `/api/pets?type=${this.state.filters.type}`;
-   }
-
-   fetch(fetchUrl)
-     .then(res => res.json())
-     .then(pets => this.setState({ pets }));
-}
-
-onAdoptPet = petId => {
-  this.state.pets.map( pet => {
-    if (pet.id === petId) {
-      let adoptedPet = pet
-      adoptedPet.isAdopted = true
-      return adoptedPet
+    if (this.state.filters.type !== 'all') {
+      endpoint += `?type=${this.state.filters.type}`;
     }
-      return pet
-  })
-    this.setState({ pets: [...this.state.pets]})
- };
+
+    fetch(endpoint)
+      .then(res => res.json())
+      .then(pets => this.setState({ pets: pets }));
+  };
+
+  onChangeType = ({ target: { value } }) => {
+    this.setState({ filters: { ...this.state.filters, type: value } });
+  };
+
+  onAdoptPet = petId => {
+    const pets = this.state.pets.map(p => {
+      return p.id === petId ? { ...p, isAdopted: true } : p;
+    });
+    this.setState({ pets: pets });
+  };
 
   render() {
     return (
@@ -56,29 +49,17 @@ onAdoptPet = petId => {
             <div className="four wide column">
               <Filters
                 onChangeType={this.onChangeType}
-                onFindPetsClick={this.fetchPets}/>
+                onFindPetsClick={this.fetchPets}
+              />
             </div>
-
             <div className="twelve wide column">
-              <PetBrowser
-                pets={this.state.pets}
-                onAdoptPet={this.onAdoptPet}/>
+              <PetBrowser pets={this.state.pets} onAdoptPet={this.onAdoptPet} />
             </div>
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
-export default App
-
-
-//NOT NEEDED
-// filteredPets = (term) => {
-// if (this.state.filters.type === "all") {
-//     return this.state.pets
-//   } else {
-//     return this.state.pets.filter(pet => pet.type === this.state.filters.type)
-//   }
-// }
+export default App;
